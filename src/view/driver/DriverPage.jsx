@@ -58,6 +58,7 @@ class DriverPage extends Component {
     this.completeTrip = this.completeTrip.bind(this);
     this.clearDirection = this.clearDirection.bind(this);
     this.setDriverStatus = this.setDriverStatus.bind(this);
+    this.setStatus = this.setStatus.bind(this);
     this.directionsCallback = this.directionsCallback.bind(this);
   }
   async componentDidMount() {
@@ -85,6 +86,7 @@ class DriverPage extends Component {
   completeTrip() {
     const postData = {
       id: this.state.driver.id,
+      customer: this.state.customer.id,
     };
     const axiosConfig = {
       headers: {
@@ -92,6 +94,7 @@ class DriverPage extends Component {
         "Access-Control-Allow-Origin": "*",
       },
     };
+    this.setStatus(1);
     axios
       .post(
         process.env.REACT_APP_API_URL + "/customer/complete-trip",
@@ -118,6 +121,7 @@ class DriverPage extends Component {
   listenChooseMsg() {
     const id = Number(window.location.href.split("/")[4]);
     echo.channel("driverChoose" + id).listen(".choose", (event) => {
+      this.setStatus(0);
       console.log(event);
       this.setState(() => ({
         customer: event.customer,
@@ -180,6 +184,7 @@ class DriverPage extends Component {
               "Access-Control-Allow-Origin": "*",
             },
           };
+          this.setStatus(1);
           axios
             .post(
               process.env.REACT_APP_API_URL + "/customer/trip-accept",
@@ -196,16 +201,38 @@ class DriverPage extends Component {
       });
     });
   }
-  setDriverStatus() {
+  setDriverStatus(checked) {
     const id = Number(window.location.href.split("/")[4]);
     const dbRef = ref(driverDB);
     get(child(dbRef, `driver/${id}`))
       .then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          if (data.status === 0) data.status = 1;
+          if (checked) data.status = 1;
           else data.status = 0;
           //data.status = status;
+          this.setState(() => ({
+            driver: data,
+          }));
+          const updates = {};
+          updates["/driver/" + id] = data;
+          update(dbRef, updates);
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  setStatus(status) {
+    const id = Number(window.location.href.split("/")[4]);
+    const dbRef = ref(driverDB);
+    get(child(dbRef, `driver/${id}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          data.status = status;
           this.setState(() => ({
             driver: data,
           }));
@@ -265,11 +292,11 @@ class DriverPage extends Component {
             )}
             <Switch
               defaultChecked={this.state.driver.status}
-              onChange={this.setDriverStatus}
+              onChange={(checked) => this.setDriverStatus(checked)}
               className="active-btn"
             />
             <LoadScript
-              googleMapsApiKey="AIzaSyDnVypcq2NVDLpwifna1XrBi7ASZp5h69s"
+              googleMapsApiKey="AIzaSyA0N-L19-W-RnrONm3EGjTN3XTw2n0e4JU"
               libraries={libraries}
             >
               <GoogleMap

@@ -1,12 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const userSlice = createSlice({
-  name: 'trip',
+  name: "trip",
   initialState: {
     start: null,
     end: null,
     route: null,
     driver: null,
+    userId: null,
     type: 1,
   },
   reducers: {
@@ -19,6 +20,9 @@ export const userSlice = createSlice({
     setDriver: (state, action) => {
       state.driver = action.payload;
     },
+    setUserId: (state, action) => {
+      state.userId = action.payload;
+    },
     setDriverType: (state, action) => {
       state.type = action.payload;
     },
@@ -26,6 +30,7 @@ export const userSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { initTrip, setDriver, setDriverType } = userSlice.actions;
+export const { initTrip, setDriver, setDriverType, setUserId } =
+  userSlice.actions;
 export const selectTrip = (state) => state.trip;
 export default userSlice.reducer;

@@ -41,10 +41,9 @@ const config = {
   icon: <p />,
   okText: "設定",
   cancelText: "キャンセル",
-  closable: true,
   onCancel() {
     var postData = {
-      id: 1,
+      id: store.getState().trip.userId,
     };
     axios
       .post(
@@ -64,7 +63,7 @@ const config = {
       .set("hour", timeOut.hour())
       .set("minute", timeOut.minute());
     var postData = {
-      id: 1,
+      id: store.getState().trip.userId,
       datetime: dateOut.toDate(),
       trip: store.getState().trip,
     };
@@ -102,7 +101,11 @@ function Content() {
   const [date, setDate] = useState();
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_API_URL + "/customer/get-schedule")
+      .get(
+        process.env.REACT_APP_API_URL +
+          "/customer/get-schedule/" +
+          store.getState().trip.userId
+      )
       .then((res) => {
         console.log(res);
         dateOut = dayjs(res.data.date, "YYYY-MM-DD");
@@ -113,6 +116,11 @@ function Content() {
         setLoaded(true);
       })
       .catch((error) => {
+        dateOut = dayjs();
+        timeOut = dayjs("00:00", format);
+        setTime(dateOut);
+        setDate(timeOut);
+        setLoaded(true);
         console.log(error);
       });
   }, []);

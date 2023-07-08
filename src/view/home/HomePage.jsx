@@ -6,7 +6,13 @@ import { Modal, message } from "antd";
 import echo from "../../service/socket";
 import store from "../../store";
 import { MainLayout } from "../../component/layout";
-import { selectTrip, setDriver, setDriverType } from "../../store/modules/trip";
+import {
+  selectTrip,
+  setDriver,
+  setDriverType,
+  setUserId,
+} from "../../store/modules/trip";
+import { useParams } from "react-router-dom";
 import {
   CalendarIcon,
   EndIcon,
@@ -39,16 +45,17 @@ function HomePage() {
   const [orderType, setOrderType] = useState("0");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const { userId } = useParams();
 
   const listenCompletedEvent = useCallback(() => {
-    echo.channel("completeTrip").listen(".complete", (event) => {
+    echo.channel("completeTrip" + userId).listen(".complete", (event) => {
       showModal();
-      echo.channel("completeTrip").stopListening(".complete");
+      echo.channel("completeTrip" + userId).stopListening(".complete");
     });
-  }, []);
+  }, [userId]);
 
   const listenMsg = useCallback(() => {
-    echo.channel("hello").listen(".message", (event) => {
+    echo.channel("hello" + userId).listen(".message", (event) => {
       console.log(event);
       if (event.status === 1) {
         removeMarkers();
@@ -72,24 +79,28 @@ function HomePage() {
       message.destroy();
       setLoading(false);
     });
-  }, [listenCompletedEvent]);
+  }, [listenCompletedEvent, userId]);
+  const listenScheduleEvent = useCallback(() => {
+    echo
+      .channel("schedule" + userId)
+      .listen(".schedule_send", async (event) => {
+        message.info(
+          "予約していた乗車の時間です。システムは自動的にドライバーを見つけます。"
+        );
+        setType(event.data.driver_type);
+        store.dispatch(setDriverType(event.data.driver_type));
+        await setDirection(event.data.start_location, event.data.end_location);
+        setLoading(true);
+        message.loading("検索中...", 180);
+      });
+  }, [userId]);
   useEffect(() => {
+    store.dispatch(setUserId(userId));
     loadMap();
     listenMsg();
     listenScheduleEvent();
-  }, [listenMsg]);
-  const listenScheduleEvent = () => {
-    echo.channel("schedule").listen(".schedule_send", async (event) => {
-      message.info(
-        "予約していた乗車の時間です。システムは自動的にドライバーを見つけます。"
-      );
-      setType(event.data.driver_type);
-      store.dispatch(setDriverType(event.data.driver_type));
-      await setDirection(event.data.start_location, event.data.end_location);
-      setLoading(true);
-      message.loading("検索中...", 180);
-    });
-  };
+  }, [listenMsg, listenScheduleEvent, userId]);
+
   const handleBikeSelect = () => {
     if (type !== 1) {
       setType(1);
@@ -127,6 +138,9 @@ function HomePage() {
             postData,
             axiosConfig
           )
+          .then((response) => {
+            console.log(response);
+          })
           .catch((error) => {
             console.log(error);
             setLoading(false);

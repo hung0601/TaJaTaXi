@@ -35,10 +35,9 @@ const config = {
   icon: <p />,
   okText: "設定",
   cancelText: "キャンセル",
-  closable: true,
   onCancel() {
     var postData = {
-      id: 1,
+      id: store.getState().trip.userId,
     };
     axios
       .post(
@@ -58,7 +57,7 @@ const config = {
       message.error("データを入力してください。");
     } else {
       var postData = {
-        id: 1,
+        id: store.getState().trip.userId,
         pickup_time: timeOut,
         trip: store.getState().trip,
         day: day.map((item) => item + 1),
@@ -124,7 +123,11 @@ function Content() {
   ];
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_API_URL + "/customer/get-weekly-schedule")
+      .get(
+        process.env.REACT_APP_API_URL +
+          "/customer/get-weekly-schedule/" +
+          store.getState().trip.userId
+      )
       .then((res) => {
         console.log(res);
         day = res.data.days.map((item) => Number(item) - 1);
@@ -135,6 +138,10 @@ function Content() {
       })
       .catch((error) => {
         console.log(error);
+        day = [];
+        setDays(day);
+        setTimeDefault(timeOut);
+        setLoaded(true);
       });
   }, []);
   const handleChange = (value) => {

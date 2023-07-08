@@ -8,7 +8,8 @@ import { Loader } from "@googlemaps/js-api-loader";
 // apiKey: "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg",
 
 const loader = new Loader({
-  apiKey: "AIzaSyDnVypcq2NVDLpwifna1XrBi7ASZp5h69s",
+  apiKey: "AIzaSyA0N-L19-W-RnrONm3EGjTN3XTw2n0e4JU",
+  //apiKey: "AIzaSyDnVypcq2NVDLpwifna1XrBi7ASZp5h69s",
   //apiKey: "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg",
   version: "weekly",
 });

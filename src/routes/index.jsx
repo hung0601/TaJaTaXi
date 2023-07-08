@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import HomePage from "../view/home/HomePage.jsx";
 import DriverList from "../view/admin/DriverRequests.js";
 import AdminLayout from "../view/admin/AdminLayout.js";
@@ -8,12 +8,11 @@ import DriverPage from "../view/driver/DriverPage.jsx";
 export const router = createBrowserRouter([
   {
     path: "/",
-    children: [
-      {
-        path: "",
-        element: <HomePage />,
-      },
-    ],
+    element: <Navigate to="/customer/1" replace />,
+  },
+  {
+    path: "/customer/:userId",
+    element: <HomePage />,
   },
   {
     path: "/admin",
