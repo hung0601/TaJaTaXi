@@ -1,15 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import { ConfigProvider } from 'antd';
-import { useSelector, Provider } from 'react-redux';
-import { selectTrip } from '../../../store/modules/trip';
-import store from '../../../store';
+import { ConfigProvider } from "antd";
+import { useSelector, Provider } from "react-redux";
+import { selectTrip } from "../../../store/modules/trip";
+import store from "../../../store";
+import { StarIcon } from "../../../asset/icons";
 
-import jaJP from 'antd/locale/ja_JP';
-import './index.css';
+import jaJP from "antd/locale/ja_JP";
+import "./index.css";
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 library.add(fas);
 
@@ -29,7 +30,7 @@ const config = {
     </Provider>
   ),
   icon: <p />,
-  okText: '閉じる',
+  okText: "閉じる",
 };
 function Content() {
   const trip = useSelector(selectTrip);
@@ -42,22 +43,14 @@ function Content() {
             <div className="popup-content-header">
               <img className="anh-dai-dien" src={trip.driver.avatar} alt="" />
               <p>
-                {trip.driver.rate}
-                {' '}
-                <img
-                  src="https://quocvuongtravel.com/media/upload/hangsx/01121865.png"
-                  className="icon-start"
-                  alt=""
-                />
+                {trip.driver.rate}{" "}
+                <img src={StarIcon} className="icon-start" alt="" />
               </p>
             </div>
             <div className="popup-content-container">
               <div className="popup-content-container-item">
                 <label>氏名</label>
-                <p>
-                  {' '}
-                  {trip.driver.name}
-                </p>
+                <p> {trip.driver.name}</p>
               </div>
               <div className="popup-content-container-item">
                 <label>電話番号</label>
