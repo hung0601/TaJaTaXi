@@ -68,7 +68,7 @@ class DriverPage extends Component {
 
     get(child(dbRef, `driver/${id}`))
       .then((snapshot) => {
-        if (snapshot.exists()) {
+        if (snapshot.exists() && snapshot.val().status === 1) {
           console.log(snapshot.val());
           const data = snapshot.val();
           this.setState(() => ({
